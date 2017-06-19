@@ -1,4 +1,5 @@
 require('dotenv').config()
+var fs = require('fs');
 var moment = require('moment');
 var pry = require('pryjs')
 
@@ -7,8 +8,8 @@ var request = require("request");
 var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
 
-var db = mongoose.connect(process.env.MONGODB_URI);
-var Movie = require("./models/movie");
+//var db = mongoose.connect(process.env.MONGODB_URI);
+//var Movie = require("./models/movie");
 
 var app = express();
 app.use(bodyParser.urlencoded({extended: false}));
@@ -75,25 +76,24 @@ app.get("/weather", function (req, res) {
 
   });
 });
-/* prova gatto*/
-app.get("/gatto", function (req, res) {
-  var message = "gatto's not available";
-  var url ="https://www.programmableweb.com/api/cat";
-  request({
-      url: url,
-      method: "GET"
-  }, function(error, response, body) {
-      if (error) {
-        res.sendStatus(404);
-        res.send(message);
-      } else {
-        var json = JSON.parse(body);
-        console.log(json.value.joke);
-        message = json.value.joke;
-        res.send(message);
-      }
+/* proverb*/
+app.get("/proverb", function (req, res) {
+  /*
+  var message = "proverb's not available";
+  var obj;
+  fs.readFile('proverb.json', 'utf8', function (err, data) {
+    if (err) throw err;
 
+
+    obj = JSON.parse(data);
+    var index = Math.floor((Math.random() * (obj.length-1)));
+    console.log(index)
+    var proverbio = obj[index].proverbio
+    res.send(proverbio);
   });
+  */
+  var proverbio = getProverbio();
+  res.send(proverbio);
 });
 
 
@@ -289,4 +289,14 @@ function sendMessage(recipientId, message) {
             console.log("Error sending message: " + response.error);
         }
     });
+}
+
+
+function getProverbio(){
+  var data = fs.readFileSync('proverb.json').toString();
+  obj = JSON.parse(data);
+  var index = Math.floor((Math.random() * (obj.length-1)));
+  console.log(index)
+  var proverbio = obj[index].proverbio
+  return proverbio;
 }
